@@ -129,7 +129,7 @@ def check_access(email):
         return False
     try:
         clean_email = email.strip().lower()
-        response = supabase.table("subscriptions_fukuenAVD").select("status, current_period_end").eq("email", clean_email).execute()
+        response = supabase.table("subscriptions_fukuenADV").select("status, current_period_end").eq("email", clean_email).execute()
         
         if response.data:
             sub = response.data[0]
@@ -165,11 +165,11 @@ def execute_account_deletion(user_email, user_id):
                 pass
 
         if supabase_admin:
-            supabase_admin.table("subscriptions_fukuenAVD").delete().eq("email", clean_email).execute()
+            supabase_admin.table("subscriptions_fukuenADV").delete().eq("email", clean_email).execute()
             supabase_admin.table("fukuenadv_chat_messages").delete().eq("user_id", user_id).execute()
             supabase_admin.auth.admin.delete_user(user_id)
         else:
-            supabase.table("subscriptions_fukuenAVD").delete().eq("email", clean_email).execute()
+            supabase.table("subscriptions_fukuenADV").delete().eq("email", clean_email).execute()
             supabase.table("fukuenadv_chat_messages").delete().eq("user_id", user_id).execute()
         return True
     except Exception as e:

@@ -327,6 +327,28 @@ def show_delete_account_dialog():
     curr_email = st.session_state["user"]["email"]
     curr_id = st.session_state["user"]["id"]
 
+    # データベースからサブスクリプションの状態を取得
+    sub_info = None
+    try:
+        clean_email = curr_email.strip().lower()
+        res = supabase.table("subscriptions_fukuenADV").select("cancel_at_period_end, status").eq("email", clean_email).execute()
+        if res.data:
+            sub_info = res.data[0]
+    except Exception as e:
+        st.error(f"契約情報の確認に失敗しました: {e}")
+
+    # 有料プラン契約中かつ自動更新が停止していない（cancel_at_period_end が False）場合は退会をブロック
+    is_active = sub_info and sub_info.get("status") in ["active", "trialing"]
+    cancel_at_period_end = sub_info.get("cancel_at_period_end", False) if sub_info else False
+
+    if is_active and not cancel_at_period_end:
+        st.error("定期決済の自動更新が解除されていません。")
+        st.write("アカウントを削除する前に、まず「契約管理・解約」ボタンから定期決済の自動更新を停止（解約手続き）を行ってください。")
+        
+        stripe_portal = st.secrets.get("stripe", {}).get("STRIPE_PORTAL_URL", "#")
+        st.markdown(f'<a href="{stripe_portal}" target="_blank"><button style="width:100%; padding:10px; border-radius:4px; background:#4F46E5; color:white; border:none; cursor:pointer; font-weight:bold;">契約管理・解約画面を開く</button></a>', unsafe_allow_html=True)
+        return
+
     st.warning("アカウントを削除すると、相談履歴が全削除されます。")
     agree = st.checkbox("注意事項（復元不可・返金不可）に同意します", key="chk_delete_agree")
     

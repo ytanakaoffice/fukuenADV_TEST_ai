@@ -387,7 +387,7 @@ st.sidebar.title("復縁アドバイザーT AI")
 if is_premium:
     st.sidebar.success(f"👑 有料プラン適用中\n{st.session_state['user']['email']}")
     stripe_portal = st.secrets.get("stripe", {}).get("STRIPE_PORTAL_URL", "#")
-    st.sidebar.markdown(f'<a href="{stripe_portal}" target="_blank"><button style="width:100%; padding:6px; border-radius:4px; background:#4F46E5; color:white; border:none; cursor:pointer; font-weight:bold;">契約管理・解約</button></a>', unsafe_allow_html=Type if 'Type' in globals() else 'unsafe_allow_html')
+    st.sidebar.markdown(f'<a href="{stripe_portal}" target="_blank"><button style="width:100%; padding:6px; border-radius:4px; background:#4F46E5; color:white; border:none; cursor:pointer; font-weight:bold;">契約管理・解約</button></a>', unsafe_allow_html=True)
     if st.sidebar.button("退会手続き", use_container_width=True):
         show_delete_account_dialog()
     if st.sidebar.button("ログアウト", use_container_width=True):
@@ -438,7 +438,7 @@ for tid in reversed(st.session_state["chat_threads"]):
     is_active = (tid == st.session_state["current_thread_id"])
     if st.sidebar.button(label_text, key=f"btn_{tid}", use_container_width=True, disabled=is_active):
         st.session_state["current_thread_id"] = tid
-        st.reron = True if 'reron' in globals() else st.rerun()
+        st.rerun()
 
 current_tid = st.session_state["current_thread_id"]
 current_messages = st.session_state["thread_messages"].get(current_tid, [])
